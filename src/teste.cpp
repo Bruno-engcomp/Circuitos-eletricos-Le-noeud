@@ -12,7 +12,7 @@ int letraA[6] = {1,0,0,0,0,0};
 //Letra B
 int letraB[6] = {1,1,0,0,0,0};
 
-
+void mostrarLetra(int letra[6]);
 
 
 void setup() {
