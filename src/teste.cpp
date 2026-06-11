@@ -2,15 +2,16 @@
 
 Servo servos[6];
 
-int pinos[6] = {13, 12, 14, 27, 26 ,25};
+int pinos[6] = {27, 26, 25, 13, 12 ,14};
 
 //Algumas letras so para testar
 
 //Letra A
-int letraA[6] = {1,0,0,0,0,0};
+// int letraA[6] = {1,0,0,0,0,0};
 
 //Letra B
-int letraB[6] = {1,1,0,0,0,0};
+// int letraB[6] = {1,1,0,0,0,0};
+
 
 int alfabeto[27][6] = {
   {1,0,0,0,0,0}, // A
@@ -24,14 +25,14 @@ int alfabeto[27][6] = {
   {0,1,0,0,1,0}, // I
   {1,0,0,1,1,0}, // J
   {1,0,1,0,0,0}, // K
-  {1,1,1,0,0,0}, // L
-  {1,0,1,1,0,0}, // M
+  {1,1,1,0,0,0}, // L 
+  {1,0,1,1,0,0}, // M 
   {1,0,1,1,1,0}, // N
   {1,0,1,0,1,0}, // O
   {1,1,1,1,0,0}, // P
   {1,1,1,1,1,0}, // Q
   {1,1,1,0,1,0}, // R
-  {0,1,1,1,0,0}, // S
+  {0,1,1,1,0,0}, // S 
   {0,1,1,1,1,0}, // T
   {1,0,1,0,0,1}, // U
   {1,1,1,0,0,1}, // V
@@ -39,10 +40,7 @@ int alfabeto[27][6] = {
   {1,0,1,1,0,1}, // X
   {1,0,1,1,1,1}, // Y
   {1,0,1,0,1,1}  // Z
-};
-
-void mostrarLetra(int letra[6]);
-
+}
 
 void setup() {
   for (int i = 0; i < 6; i++) {
@@ -51,10 +49,16 @@ void setup() {
 }
 
 void loop() {
-  mostrarLetra(letraA);
+  char letra = "A";
+  int index = transformarLetraEmIndex(letra);
+
+  mostrarLetra(alfabeto[index]);
   delay(2000);
 
-  mostrarLetra(letraB);
+  letra = "B";
+  int index = transformarLetraEmIndex(letra);
+
+  mostrarLetra(alfabeto[index]);
   delay(2000);
 }
 
@@ -67,4 +71,10 @@ void mostrarLetra(int letra[6])
     else
       servos[i].write(0);
   }
+}
+
+int transformarLetraEmIndex(char letra)
+{
+  int letraAscii = letra;
+  return letraAscii - 65; // vai ser o indice do array corresponde a letra por a = 65 -65 = 0 que e o indice de a no array
 }
