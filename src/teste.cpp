@@ -13,7 +13,7 @@ int pinos[6] = {27, 26, 25, 13, 12 ,14};
 // int letraB[6] = {1,1,0,0,0,0};
 
 
-int alfabeto[27][6] = {
+int alfabeto[26][6] = {
   {1,0,0,0,0,0}, // A
   {1,1,0,0,0,0}, // B
   {1,0,0,1,0,0}, // C
@@ -25,7 +25,7 @@ int alfabeto[27][6] = {
   {0,1,0,0,1,0}, // I
   {1,0,0,1,1,0}, // J
   {1,0,1,0,0,0}, // K
-  {1,1,1,0,0,0}, // L 
+  {1,1,1,0,0,0}, // L
   {1,0,1,1,0,0}, // M 
   {1,0,1,1,1,0}, // N
   {1,0,1,0,1,0}, // O
@@ -40,7 +40,7 @@ int alfabeto[27][6] = {
   {1,0,1,1,0,1}, // X
   {1,0,1,1,1,1}, // Y
   {1,0,1,0,1,1}  // Z
-}
+};
 
 void setup() {
   for (int i = 0; i < 6; i++) {
@@ -49,14 +49,14 @@ void setup() {
 }
 
 void loop() {
-  char letra = "A";
+  char letra = 'A';
   int index = transformarLetraEmIndex(letra);
 
   mostrarLetra(alfabeto[index]);
   delay(2000);
 
-  letra = "B";
-  int index = transformarLetraEmIndex(letra);
+  letra = 'B';
+  index = transformarLetraEmIndex(letra);
 
   mostrarLetra(alfabeto[index]);
   delay(2000);
