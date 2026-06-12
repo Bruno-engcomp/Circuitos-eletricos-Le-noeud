@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "author": "Bruno",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-breadboard-half",
+      "id": "bb1",
+      "top": -109.5,
+      "left": -419.1,
+      "rotate": 90,
+      "attrs": { "color": "#575756" }
+    },
+    {
+      "type": "wokwi-breadboard-mini",
+      "id": "bb2",
+      "top": -347,
+      "left": -79.2,
+      "attrs": { "color": "#2958b0" }
+    },
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": -384, "left": -206.36, "attrs": {} },
+    { "type": "wokwi-microphone", "id": "mic", "top": -362.58, "left": 23.79, "attrs": {} },
+    {
+      "type": "wokwi-servo",
+      "id": "servo1",
+      "top": -185.2,
+      "left": -563.6,
+      "rotate": 180,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "servo2",
+      "top": -146.8,
+      "left": -563.6,
+      "rotate": 180,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "servo3",
+      "top": -98.8,
+      "left": -563.6,
+      "rotate": 180,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "servo4",
+      "top": -174.8,
+      "left": -144,
+      "attrs": { "hornColor": "white" }
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "servo5",
+      "top": -146,
+      "left": -144,
+      "attrs": { "hornColor": "white" }
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "servo6",
+      "top": -98,
+      "left": -144,
+      "attrs": { "hornColor": "white" }
+    },
+    { "type": "wokwi-microsd-card", "id": "sd1", "top": -354.97, "left": -575.93, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": 3.4,
+      "left": -287.8,
+      "rotate": 180,
+      "attrs": { "color": "black", "xray": "1", "bounce": "1" }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": -400.8,
+      "left": -75,
+      "attrs": { "volume": "0.1" }
+    },
+    { "type": "wokwi-vcc", "id": "vcc1", "top": -172.04, "left": -115.2, "attrs": {} },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": -267.24944461216234,
+      "left": -634.1384200233327,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 13.55,
+      "left": -220.8,
+      "attrs": { "value": "1000" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:27", "bb1:2b.f", "yellow", [ "h0" ] ],
+    [ "esp:26", "bb1:6b.g", "yellow", [ "h0" ] ],
+    [ "esp:25", "bb1:11b.h", "yellow", [ "v0", "h-76.65" ] ],
+    [ "esp:12", "bb1:8t.d", "yellow", [ "v0", "h-19.05" ] ],
+    [ "esp:14", "bb1:13t.e", "yellow", [ "h0" ] ],
+    [ "bb1:2b.j", "servo1:PWM", "yellow", [ "h0" ] ],
+    [ "bb1:11b.j", "servo3:PWM", "yellow", [ "h0" ] ],
+    [ "bb1:6b.j", "servo2:PWM", "yellow", [ "h0" ] ],
+    [ "bb1:13t.a", "servo6:PWM", "yellow", [ "h0" ] ],
+    [ "bb1:8t.a", "servo5:PWM", "yellow", [ "h0" ] ],
+    [ "esp:13", "bb1:5t.c", "yellow", [ "h0" ] ],
+    [ "bb1:5t.a", "servo4:PWM", "yellow", [ "h0" ] ],
+    [ "bb1:tp.10", "servo6:V+", "red", [ "h0" ] ],
+    [ "bb1:tn.9", "servo6:GND", "black", [ "h0" ] ],
+    [ "bb1:tn.2", "servo4:GND", "black", [ "h0" ] ],
+    [ "bb1:tp.3", "servo4:V+", "red", [ "h0" ] ],
+    [ "bb1:tn.5", "servo5:GND", "black", [ "h0" ] ],
+    [ "bb1:tp.5", "servo5:V+", "red", [ "h-0.3", "v11.2" ] ],
+    [ "bb1:tp.25", "bb1:bp.25", "red", [ "h0" ] ],
+    [ "bb1:bn.11", "servo3:GND", "black", [ "h0" ] ],
+    [ "bb1:bn.6", "servo2:GND", "black", [ "h0" ] ],
+    [ "bb1:bp.6", "servo2:V+", "red", [ "h0.9", "v-8" ] ],
+    [ "bb1:bp.10", "servo3:V+", "red", [ "h0" ] ],
+    [ "bb1:bn.3", "servo1:GND", "black", [ "h0" ] ],
+    [ "bb1:bp.2", "servo1:V+", "red", [ "h0" ] ],
+    [ "esp:GND.1", "bb1:tn.1", "black", [ "h-9.45", "v96", "h38.4" ] ],
+    [ "esp:GND.3", "bb2:1t.e", "black", [ "h9.6", "v-57.6" ] ],
+    [ "bb2:1t.a", "bb2:4t.a", "black", [ "v0" ] ],
+    [ "bb2:1t.b", "bb2:13t.b", "black", [ "v0" ] ],
+    [ "esp:4", "bb2:3b.i", "yellow", [ "h0" ] ],
+    [ "esp:15", "bb2:12b.j", "yellow", [ "v0", "h134.4" ] ],
+    [ "bb2:3b.f", "bb2:3t.e", "yellow", [ "v0" ] ],
+    [ "bb2:12b.f", "bb2:12t.e", "yellow", [ "v0" ] ],
+    [ "esp:33", "bb1:18b.i", "yellow", [ "h0" ] ],
+    [ "bb1:tp.1", "vcc1:VCC", "red", [ "v0" ] ],
+    [ "bb1:tn.24", "bb1:bn.24", "black", [ "h0" ] ],
+    [ "mic:1", "bb2:12t.c", "", [ "$bb" ] ],
+    [ "mic:2", "bb2:13t.c", "", [ "$bb" ] ],
+    [ "bz1:1", "bb2:3t.c", "", [ "$bb" ] ],
+    [ "bz1:2", "bb2:4t.c", "", [ "$bb" ] ],
+    [ "bb1:bn.16", "bb1:20b.j", "black", [ "h0" ] ],
+    [ "btn1:1.l", "bb1:20t.c", "", [ "$bb" ] ],
+    [ "btn1:2.l", "bb1:18t.c", "", [ "$bb" ] ],
+    [ "btn1:1.r", "bb1:20b.h", "", [ "$bb" ] ],
+    [ "btn1:2.r", "bb1:18b.h", "", [ "$bb" ] ],
+    [ "r2:1", "bb1:18t.c", "", [ "$bb" ] ],
+    [ "r2:2", "bb1:tp.15", "", [ "$bb" ] ]
+  ],
+  "dependencies": {}
+}
