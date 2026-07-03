@@ -1,4 +1,4 @@
-#include <ESP32Servo.h>
+s#include <ESP32Servo.h>
 
 // criando o array pra controlar os 6 servos da celula braille
 Servo servos[6];
