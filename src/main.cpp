@@ -1,114 +1,142 @@
-#include <ESP32Servo.h>
+#include <Arduino.h>
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
 
-// criando o array pra controlar os 6 servos da celula braille
-Servo servos[6];
+#define SDA_PIN 8
+#define SCL_PIN 9
 
-// definindo os pinos de dados de cada servo no esp32
-int pinos[6] = {27, 26, 25, 13, 12, 14};
-// pino do buzzer para dar o aviso sonoro
-int buzzer = 4;
-// pino que vai ler o sinal do microfone no futuro (reservado)
-int microfone = 15;
-// pino do botao que a gente usa para testar manualmente
-int botao = 33;
+#define BOTAO 15
 
-// matriz com o alfabeto braille completo de a a z.
-int alfabeto[26][6] = {
-  {1,0,0,0,0,0}, // letra a
-  {1,1,0,0,0,0}, // letra b
-  {1,0,0,1,0,0}, // letra c
-  {1,0,0,1,1,0}, // letra d
-  {1,0,0,0,1,0}, // letra e
-  {1,1,0,1,0,0}, // letra f
-  {1,1,0,1,1,0}, // letra g
-  {1,1,0,0,1,0}, // letra h
-  {0,1,0,0,1,0}, // letra i
-  {1,0,0,1,1,0}, // letra j
-  {1,0,1,0,0,0}, // letra k
-  {1,1,1,0,0,0}, // letra l
-  {1,0,1,1,0,0}, // letra m 
-  {1,0,1,1,1,0}, // letra n
-  {1,0,1,0,1,0}, // letra o
-  {1,1,1,1,0,0}, // letra p
-  {1,1,1,1,1,0}, // letra q
-  {1,1,1,0,1,0}, // letra r
-  {0,1,1,1,0,0}, // letra s 
-  {0,1,1,1,1,0}, // letra t
-  {1,0,1,0,0,1}, // letra u
-  {1,1,1,0,0,1}, // letra v
-  {0,1,0,1,1,1}, // letra w
-  {1,0,1,1,0,1}, // letra x
-  {1,0,1,1,1,1}, // letra y
-  {1,0,1,0,1,1}  // letra z
+Adafruit_PWMServoDriver pca = Adafruit_PWMServoDriver(0x40);
+
+// limites do servo (ajuste se necessário)
+#define SERVO_MIN 120
+#define SERVO_MAX 500
+
+// ângulos
+#define ANGULO_BAIXO 0
+#define ANGULO_ALTO 50
+
+// canais do PCA9685
+const uint8_t canaisServos[6] = {0, 1, 2, 3, 4, 5};
+
+// matriz Braille
+const int alfabeto[26][6] = {
+  {1,0,0,0,0,0},
+  {1,1,0,0,0,0},
+  {1,0,0,1,0,0},
+  {1,0,0,1,1,0},
+  {1,0,0,0,1,0},
+  {1,1,0,1,0,0},
+  {1,1,0,1,1,0},
+  {1,1,0,0,1,0},
+  {0,1,0,0,1,0},
+  {0,1,0,1,1,0},
+  {1,0,1,0,0,0},
+  {1,1,1,0,0,0},
+  {1,0,1,1,0,0},
+  {1,0,1,1,1,0},
+  {1,0,1,0,1,0},
+  {1,1,1,1,0,0},
+  {1,1,1,1,1,0},
+  {1,1,1,0,1,0},
+  {0,1,1,1,0,0},
+  {0,1,1,1,1,0},
+  {1,0,1,0,0,1},
+  {1,1,1,0,0,1},
+  {0,1,0,1,1,1},
+  {1,0,1,1,0,1},
+  {1,0,1,1,1,1},
+  {1,0,1,0,1,1}
 };
 
-// declarando as funcoes aqui em cima pro compilador saber que elas existem
-int transformarLetraEmIndex(char letra);
-void mostrarLetra(int letra[6]);
-void bipConfirmacao();
-
-void setup() {
-  // abrindo a comunicacao serial na velocidade padrao
-  Serial.begin(115200);
-  Serial.println("--- modulo braille pronto para receber comando de voz ---");
-  Serial.println("simule o comando de voz digitando uma letra (a-z) no terminal:");
-
-  // mapeando e ligando cada um dos 6 servos no seu pino correspondente
-  for (int i = 0; i < 6; i++) {
-    servos[i].attach(pinos[i]);
-  }
-
-  // configurando o pino do buzzer como saida de sinal
-  pinMode(buzzer, OUTPUT);
-  // configurando o botao como entrada (caso queira usar pra testar)
-  pinMode(botao, INPUT_PULLUP);
+uint16_t anguloParaPWM(int angulo)
+{
+    return map(angulo, 0, 180, SERVO_MIN, SERVO_MAX);
 }
 
-void loop() {
-  // fica checando se o "reconhecedor de voz" mandou alguma letra pela serial
-  if (Serial.available() > 0) {
-    char letraRecebida = Serial.read();
-    
-    // ignora comandos de quebra de linha comuns de terminais (\n ou \r)
-    if (isAlpha(letraRecebida)) {
-      // transforma em maiuscula pra bater com o calculo da matriz
-      char letraMaiuscula = toupper(letraRecebida);
-      // calcula qual a linha dessa letra na matriz
-      int index = transformarLetraEmIndex(letraMaiuscula);
+void moverServo(uint8_t canal, int angulo)
+{
+    pca.setPWM(canal, 0, anguloParaPWM(angulo));
+}
 
-      // se a letra for valida (de a a z), executa o comando
-      if (index >= 0 && index <= 25) {
-        Serial.print("[comando de voz recebido] exibindo em braille a letra: ");
-        Serial.println(letraMaiuscula);
-        
-        // da o aviso sonoro de sucesso e move a celula braille
-        bipConfirmacao();
-        mostrarLetra(alfabeto[index]);
-      }
+void mostrarLetra(const int letra[6])
+{
+    for (int i = 0; i < 6; i++)
+    {
+        if (letra[i])
+            moverServo(canaisServos[i], ANGULO_ALTO);
+        else
+            moverServo(canaisServos[i], ANGULO_BAIXO);
     }
-  }
 }
 
-// funcao que varre o array da letra e bota os motores na posicao certa
-void mostrarLetra(int letra[6]) {
-  for(int i = 0; i < 6; i++) {
-    // se for 1 na matriz, o motor gira 50 graus pra subir o pino
-    if(letra[i] == 1)
-      servos[i].write(50);
-    // se for 0, o motor volta pra 0 graus pro pino abaixar
-    else
-      servos[i].write(0);
-  }
+int transformarLetra(char c)
+{
+    c = toupper(c);
+
+    if (c < 'A' || c > 'Z')
+        return -1;
+
+    return c - 'A';
 }
 
-// faz a conta usando a tabela ascii pra transformar a letra no indice da matriz.
-int transformarLetraEmIndex(char letra) {
-  return letra - 65; 
+void setup()
+{
+    Serial.begin(115200);
+
+    Wire.begin(SDA_PIN, SCL_PIN);
+
+    pca.begin();
+    pca.setPWMFreq(50);
+
+    pinMode(BOTAO, INPUT_PULLUP);
+
+    delay(500);
+
+    Serial.println();
+    Serial.println("=================================");
+    Serial.println("CELULA BRAILLE");
+    Serial.println("Digite uma letra de A ate Z");
+    Serial.println("=================================");
+
+    for(int i=0;i<6;i++)
+        moverServo(canaisServos[i], ANGULO_BAIXO);
 }
 
-// funcao basica pra dar um pulso de energia no buzzer e fazer ele apitar por 100ms
-void bipConfirmacao() {
-  digitalWrite(buzzer, HIGH);
-  delay(100);
-  digitalWrite(buzzer, LOW);
+void loop()
+{
+    if (Serial.available())
+    {
+        char letra = Serial.read();
+
+        if (isalpha(letra))
+        {
+            int indice = transformarLetra(letra);
+
+            if(indice >= 0)
+            {
+                Serial.print("Letra recebida: ");
+                Serial.println((char)toupper(letra));
+
+                mostrarLetra(alfabeto[indice]);
+            }
+        }
+    }
+
+    // botão para recolher todos os pinos
+    if(digitalRead(BOTAO)==LOW)
+    {
+        delay(30);
+
+        if(digitalRead(BOTAO)==LOW)
+        {
+            for(int i=0;i<6;i++)
+                moverServo(canaisServos[i], ANGULO_BAIXO);
+
+            Serial.println("Celula resetada.");
+
+            while(digitalRead(BOTAO)==LOW);
+        }
+    }
 }
